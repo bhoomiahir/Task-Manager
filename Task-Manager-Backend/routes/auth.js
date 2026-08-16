@@ -24,4 +24,23 @@ router.post("/signup", async (req, res) => {
   res.status(201).json({ message: "User created successfully", user: { email: newUser.email, username: newUser.username } });
 });
 
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(400).json({message: "Invalid credentials"});
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+    return res.status(400).json({message: "Invalid credentials"});
+  }
+
+  res.status(200).json({message: "Login Successful", user: { email: user.email, username: user.username}})
+
+})
+
+
+
 module.exports = router;
